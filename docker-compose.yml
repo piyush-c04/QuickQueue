@@ -19,3 +19,11 @@ services:
     command: python worker_app.py
     depends_on:
       - redis
+
+  scheduler:
+    build: .
+    command: python -m core.scheduler.scheduler
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - redis
