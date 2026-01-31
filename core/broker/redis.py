@@ -9,28 +9,54 @@ class RedisBroker:
         
 # core/broker/redis.py
 
-    # Update the enqueue method signature
-    def enqueue(self, task_name: str, payload: Dict[str, Any], retry_count: int = 0) -> str:
+#     # Update the enqueue method signature
+#     def enqueue(self, task_name: str, payload: Dict[str, Any], retry_count: int = 0) -> str:
+#         task_id = str(uuid.uuid4())
+#         message = {
+#             "task_id": task_id,
+#             "task_name": task_name,
+#             "payload": payload,
+#             "retry_count": retry_count  
+#         }
+#         self.redis.lpush(self.queue_name, json.dumps(message))
+#         return task_id
+    def enqueue(self, task_name: str, payload: Dict[str, Any], retry_count: int = 0, chain: list = None) -> str:
+        if chain is None:
+            chain = []
+            
         task_id = str(uuid.uuid4())
         message = {
             "task_id": task_id,
             "task_name": task_name,
             "payload": payload,
-            "retry_count": retry_count  # <--- NEW TRACKING FIELD
+            "retry_count": retry_count,
+            "chain": chain  
         }
         self.redis.lpush(self.queue_name, json.dumps(message))
         return task_id
     
     # Add a specific method for re-queuing (keeps the SAME task_id)
-    def re_enqueue(self, task_id: str, task_name: str, payload: Dict[str, Any], retry_count: int):
+    # def re_enqueue(self, task_id: str, task_name: str, payload: Dict[str, Any], retry_count: int):
+    #     message = {
+    #         "task_id": task_id,      
+    #         "task_name": task_name,
+    #         "payload": payload,
+    #         "retry_count": retry_count
+    #     }
+    #     self.redis.lpush(self.queue_name, json.dumps(message))
+# In core/broker/redis.py
+
+    def re_enqueue(self, task_id, task_name, payload, retry_count, chain=None):
+        if chain is None:
+            chain = []
         message = {
-            "task_id": task_id,        # Keep the original ID so the API can still track it!
+            "task_id": task_id,
             "task_name": task_name,
             "payload": payload,
-            "retry_count": retry_count
+            "retry_count": retry_count,
+            "chain": chain 
         }
         self.redis.lpush(self.queue_name, json.dumps(message))
-        
         
     def dequeue(self)->Dict[str,Any]|None:
         item = self.redis.brpop(self.queue_name, timeout=5)

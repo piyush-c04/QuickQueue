@@ -20,9 +20,25 @@ def slow_task(seconds: int):
         print(f"slow_task interrupted: {e}")
         raise
 
-# === MAKE SURE THIS IS HERE ===
 @task(name="cleanup")
 def cleanup():
     print("Running database cleanup...")
     time.sleep(1)
     return "Cleanup Done"
+
+@task(name="step1_generate")
+def generate_data(initial_value: int):
+    print(f"--- Step 1: Generating data from {initial_value} ---")
+    # Returns data to be passed to step 2
+    return {"data": initial_value * 2} 
+
+@task(name="step2_process")
+def process_data(data: int):
+    print(f"--- Step 2: Processing {data} ---")
+    # Returns data to be passed to step 3
+    return {"final_result": data + 100}
+
+@task(name="step3_save")
+def save_data(final_result: int):
+    print(f"--- Step 3: Saving {final_result} to DB ---")
+    return "Workflow Complete"
