@@ -8,7 +8,7 @@ from core.broker.redis import RedisBroker
 # Format: "task_name": interval_in_seconds
 SCHEDULE = {
     "add": 10,        # Run 'add' every 10 seconds
-    "cleanup": 15     # Run 'cleanup' every 30 seconds
+    "cleanup": 15     # Run 'cleanup' every 10-15-30 seconds 15 for now
 }
 
 def run_scheduler():

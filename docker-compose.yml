@@ -27,3 +27,15 @@ services:
       - PYTHONUNBUFFERED=1
     depends_on:
       - redis
+
+  # frontend:
+  #   build: 
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "5173:5173"
+  #   volumes:
+  #     # Enable Hot Reloading (Changes in code reflect instantly)
+  #     - ./frontend/src:/app/src
+  #   environment:
+  #     - CHOKIDAR_USEPOLLING=true
